@@ -706,6 +706,14 @@
         }
 
         // ========================================
+        // 輔助函數: 安全化ID名稱
+        // ========================================
+        function safeId(str) {
+            // 替換特殊字元為安全字元
+            return str.replace(/[\[\]]/g, '_').replace(/[()]/g, '_');
+        }
+
+        // ========================================
         // 核心功能: 計算權重
         // ========================================
         function calculateWeight(resourceName, amount) {
@@ -1074,7 +1082,7 @@
                             實際中選機率 = 個人權重 ÷ ${totalWeight} × 100%
                         </div>
                         
-                        <div class="participant-list" id="participants-${jobName}">
+                        <div class="participant-list" id="participants-${safeId(jobName)}">
                             ${participants.map(p => {
                                 const probability = totalWeight > 0 ? ((p.weight / totalWeight) * 100).toFixed(2) : 0;
                                 return `
@@ -1092,7 +1100,7 @@
                             }).join('')}
                         </div>
                         
-                        <div class="lottery-result" id="result-${jobName}"></div>
+                        <div class="lottery-result" id="result-${safeId(jobName)}"></div>
                     </div>
                 `;
             });
@@ -1157,12 +1165,14 @@
                 saveData();
                 
                 winners.forEach(w => {
-                    const item = document.querySelector(`#participants-${jobName} .participant-item[data-name="${w.name}"]`);
+                    const safeJobName = safeId(jobName);
+                    const item = document.querySelector(`#participants-${safeJobName} .participant-item[data-name="${w.name}"]`);
                     if(item) item.classList.add('selected');
                 });
                 
                 losers.forEach(l => {
-                    const item = document.querySelector(`#participants-${jobName} .participant-item[data-name="${l.name}"]`);
+                    const safeJobName = safeId(jobName);
+                    const item = document.querySelector(`#participants-${safeJobName} .participant-item[data-name="${l.name}"]`);
                     if(item) item.classList.add('rejected');
                 });
                 
@@ -1171,7 +1181,7 @@
                     showWinnerNotification(jobName, winners);
                 }
                 
-                const resultDiv = document.getElementById(`result-${jobName}`);
+                const resultDiv = document.getElementById(`result-${safeId(jobName)}`);
                 resultDiv.innerHTML = `
                     🎉 抽籤完成!<br>
                     中選 ${winners.length} 人: ${winners.map(w => w.name).join(', ')}
